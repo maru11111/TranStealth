@@ -6,8 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] private Rigidbody rigidbody;
-    // 接地判定レイヤー
-    [SerializeField] private LayerMask groundLayer;
     //カメラ
     [SerializeField]Camera camera;
 
@@ -23,16 +21,17 @@ public class PlayerMove : MonoBehaviour
     private const float maxSpeed = 3;
     // 移動のキー入力値
     private Vector2 moveDir;
-    //接地判定スフィアの半径 (変身ごとに取得し直す
-    private float groundCheckRadius;
-    // 接地判定スフィアの開始Y座標オフセット（スフィアが開始時点で床と重ならないようにする
-    private float groundCheckStartOffsetY=0.1f;
+    // BoxCastの発射距離. オブジェクトからわずかに下の部分だけ見る
+    float groundCheckDistance = 0.1f;
+
+    [SerializeField] private PlayerCommonParam playerCommonParam;
+
+    [SerializeField] private BoxCollider playerBoxCollider;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
-        groundCheckRadius = transform.localScale.x / 2.0f;
-        
+    {   // 接地判定ボックスの一辺の長さ. オブジェクトのx幅, z幅のうち小さい方に合わせる. 
+        playerCommonParam.groundCheckBoxSize = new Vector3(playerBoxCollider.size.x, 0.01f, playerBoxCollider.size.z);
         gameInputs = new GameInputs();
 
         /* GameInputsで Player の Move で指定したキーが押されたとき, 
@@ -57,12 +56,15 @@ public class PlayerMove : MonoBehaviour
     // 接地判定
     private bool isGrounded()
     {
-        RaycastHit hit;
-        // レイスフィアの発射距離. オブジェクトからわずかに下の部分だけ見る
-        float groundCheckDistance = groundCheckStartOffsetY * 1.1f;
-        //DEBUG
-        Debug.DrawRay(transform.position + Vector3.up * groundCheckStartOffsetY, Vector3.down * groundCheckDistance, Color.red, 0.5f);
-        return Physics.SphereCast(transform.position + Vector3.up * 0.1f, groundCheckRadius, Vector3.down, out hit, groundCheckDistance, groundLayer, QueryTriggerInteraction.Ignore);
+        return Physics.BoxCast(
+            // 物体の底面 - boxの射出距離/2.0 をすることで, boxCast が初めから床に当たるのを防ぐ
+            transform.position + Vector3.down * (playerBoxCollider.size.y / 2.0f - playerCommonParam.groundCheckBoxSize.y / 2.0f) + Vector3.up*groundCheckDistance*0.5f
+            , playerCommonParam.groundCheckBoxSize * 0.5f // BoxCastの判定ボックスの半分の大きさ
+            , Vector3.down // 発射方向
+            , out RaycastHit hit
+            , Quaternion.identity  
+            , groundCheckDistance // 射出距離
+            );
     }
 
     // InputActionでMoveの時の動き（移動メソッド
@@ -86,6 +88,13 @@ public class PlayerMove : MonoBehaviour
     private void OnJump(InputAction.CallbackContext context)
     {
         if (isGrounded()) rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void OnDrawGizmos()
+    {
+        // 接地判定デバッグ出力
+        Gizmos.color = isGrounded() ? Color.green : Color.red;
+        Gizmos.DrawWireCube(transform.position + Vector3.down * (playerBoxCollider.size.y / 2.0f - playerCommonParam.groundCheckBoxSize.y / 2.0f) + Vector3.up * groundCheckDistance * 0.5f, new Vector3(playerCommonParam.groundCheckBoxSize.x, playerCommonParam.groundCheckBoxSize.y + groundCheckDistance, playerCommonParam.groundCheckBoxSize.z));
     }
 
     // Update is called once per frame

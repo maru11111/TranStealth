@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 2887101812830140809}
   - component: {fileID: 5584613203670363818}
   - component: {fileID: 8835364611078035118}
+  - component: {fileID: 850589258633296429}
   - component: {fileID: 6632970620608054755}
+  - component: {fileID: 8273045377276210952}
   - component: {fileID: 7971231271744887951}
   - component: {fileID: 8964894594328259156}
   m_Layer: 0
@@ -139,6 +141,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &850589258633296429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8692529419115025401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a422b70c999fb4da660bbd3db3d732, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCheckBoxSize: {x: 0, y: 0, z: 0}
 --- !u!114 &6632970620608054755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +171,26 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   camera: {fileID: 0}
+  playerCommonParam: {fileID: 850589258633296429}
+  playerBoxCollider: {fileID: 5584613203670363818}
+--- !u!114 &8273045377276210952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8692529419115025401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4762a9663b24ec46beee88c1a4ce2e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextObjectParam: {fileID: 0}
+  myObjectParam: {fileID: 8964894594328259156}
+  transformableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerCommonParam: {fileID: 850589258633296429}
 --- !u!114 &7971231271744887951
 MonoBehaviour:
   m_ObjectHideFlags: 0
